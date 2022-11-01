@@ -1,13 +1,13 @@
 version: "3.7"
 services:
-    data-prepper:
+  data-prepper:
     restart: unless-stopped
     container_name: data-prepper
     build:
       args:
         DATA_PREPPER_VERSION: "2.0.0-SNAPSHOT"
       context: ../../..
-      dockerfile: examples/dev/trace-analytics-sample-app/Dockerfile
+      dockerfile: /trace-analytics-sample-appos/Dockerfile
     working_dir: /usr/share/data-prepper/
     command: sh data-prepper-wait-for-opensearch-and-start.sh
     volumes:
@@ -52,7 +52,7 @@ services:
   sample-app:
     restart: unless-stopped
     build:
-      context: ../../trace-analytics-sample-app/sample-app
+      context: ../../trace-analytics-sample-appos/sample-app
       dockerfile: Dockerfile
     ports:
       - "8082:8082" # inventory
