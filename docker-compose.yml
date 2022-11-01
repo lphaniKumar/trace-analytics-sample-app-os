@@ -1,55 +1,7 @@
 version: "3.7"
-networks:
-  my_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.10.0.0/16
-          gateway: 10.10.0.1
-
 services:
-  dnsmasq:
-    container_name: dnsmasq
-    restart: always
-    build:
-      context: ../dns
-      dockerfile: Dockerfile
-    volumes:
-      - ../dns/dnsmasq.conf:/etc/dnsmasq.conf
-      - ../dns/hosts.prepper:/etc/hosts.prepper
-    ports:
-      - "5300:53/udp"
-    cap_add:
-      - NET_ADMIN
-    networks:
-      my_network:
-        ipv4_address: 10.10.1.1
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    volumes:
-      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yaml"
-    ports:
-      - "9090:9090"
-    networks:
-      - my_network
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    networks:
-      - my_network
-
-  data-prepper:
+    data-prepper:
     restart: unless-stopped
-    dns: 10.10.1.1
     container_name: data-prepper
     build:
       args:
@@ -72,33 +24,6 @@ services:
       - "21890:21890" # OTelTraceSource port
     networks:
       my_network:
-        ipv4_address: 10.10.1.2
-    depends_on:
-      - opensearch
-
-  opensearch:
-    container_name: node-0.example.com
-    image: opensearchproject/opensearch:2
-    ports:
-      - "9200:9200"
-      - "9600:9600"
-    environment:
-      - discovery.type=single-node
-    networks:
-      - my_network
-
-  opensearch-dashboard:
-    container_name: opensearch-dashboard
-    image: opensearchproject/opensearch-dashboards:2
-    ports:
-      - 5601:5601
-    expose:
-      - "5601"
-    environment:
-      OPENSEARCH_URL: https://node-0.example.com:9200
-      OPENSEARCH_HOSTS: https://node-0.example.com:9200
-    networks:
-      - my_network
 
   otel-collector:
     restart: unless-stopped
