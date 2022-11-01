@@ -52,7 +52,7 @@ services:
   sample-app:
     restart: unless-stopped
     build:
-      context: ../../trace-analytics-sample-appos/sample-app
+      context: ../../trace-analytics-sample-appos/
       dockerfile: Dockerfile
     ports:
       - "8082:8082" # inventory
